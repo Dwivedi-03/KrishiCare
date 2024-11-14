@@ -1,0 +1,5 @@
+#adminProcess::-webkit-scrollbar,
+#maincontent::-webkit-scrollbar,
+#home::-webkit-scrollbar {
+    display: none;
+}
