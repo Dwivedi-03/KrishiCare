@@ -33,7 +33,8 @@ if ($_SESSION["laboratory"] == false) {
     <?php
     $id = $_SESSION["laboratory"];
     // echo $id;
-    $sql = "SELECT `lab_id`,`lab_name`, `email`, `contact`, `lab_add`, `city`, `state`,`labprofile` FROM `laboratory_detail` WHERE `lab_id`= '$id';";
+    // $sql = "SELECT `lab_id`,`lab_name`, `email`, `contact`, `lab_add`, `city`, `state`,`labprofile` FROM `laboratory_detail` WHERE `lab_id`= '$id';";
+    $sql = "SELECT `lab_id`,`lab_name`, `email`, `contact`, `lab_add`, `city`, `state` FROM `laboratory_detail` WHERE `lab_id`= '$id';";
 
     $result = mysqli_query($con, $sql);
     if ($result->num_rows > 0) {

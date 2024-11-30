@@ -61,7 +61,7 @@
             </div>
             <div class="text-center mt-10 text-gray-600 dark:text-white">
                 <h3 class="text-4xl font-semibold leading-normal  mb-2">
-                    Avanish Yadav
+                    Admin
                 </h3>
                 <div class="text-sm leading-normal mt-0 mb-2  font-bold uppercase">
                     <i class="fas fa-map-marker-alt mr-2 text-lg "></i>

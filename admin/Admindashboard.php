@@ -89,7 +89,7 @@ include ("../Backend/config.php");
                                             <a href="#" class="flex px-4 py-3 hover:bg-gray-100 dark:hover:bg-gray-700">
                                                 <div class="flex-shrink-0">
                                                     <img class="rounded-full w-11 h-11" src="../img/profile.png"
-                                                        alt="Jese image">
+                                                        alt="Profile image">
                                                     <div
                                                         class="absolute flex items-center justify-center w-5 h-5 ms-6 -mt-5 bg-blue-600 border border-white rounded-full dark:border-gray-800">
                                                         <svg class="w-2 h-2 text-white" aria-hidden="true"
@@ -137,8 +137,8 @@ include ("../Backend/config.php");
                         <div class="hidden sm:block w-full">
                             <div class="flex justify-end items-center ml-16 text-right ">
                                 <div>
-                                    <h2 class="font-mono">Avanish Yadav</h2>
-                                    <span class="text-[12px]">avanish123@gmail.com</span>
+                                    <h2 class="font-mono">Jyoti Dwivedi</h2>
+                                    <span class="text-[12px]">jyoti@gmail.com</span>
                                 </div>
                                 <button id="dropdownDividerButton" data-dropdown-toggle="dropdownDivider"
                                     class="text-white focus:outline-none font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center "

@@ -79,7 +79,7 @@
                         <a href="#">
                             <h5 class="text-gray-900 font-bold text-2xl tracking-tight mb-2 dark:text-gray-300">Number of reports are published on krishicare and help to the farmers</h5>
                         </a>
-                        <p class="font-normal text-gray-700 mb-3 dark:text-gray-300">Here are the report for the krish yadav. who have request for the test of soil </p>
+                        <p class="font-normal text-gray-700 mb-3 dark:text-gray-300">Here are the report for the krish. who have request for the test of soil </p>
                         <a href="#" class="text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-3 py-2 text-center inline-flex items-center  dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">Read more</a>
                     </div>
                 </div>
