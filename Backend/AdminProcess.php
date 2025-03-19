@@ -110,6 +110,55 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 echo "Error while deleting Task!";
             }
             break;
+        case "userSearch":
+            //code block
+            $searchText = $_POST['searchText'];
+
+            $searchText = mysqli_real_escape_string($con, $searchText);
+
+            $sql = "
+            SELECT 
+                f.*, 
+                f.first_name AS Text, 
+                f.first_name, 
+                f.middle_name, 
+                f.last_name, 
+                f.email, 
+                f.contact_number, 
+                f.address, 
+                f.city, 
+                f.state,
+                f.password
+            FROM farmer_detail f
+            WHERE 
+                (f.first_name LIKE '%$searchText%' 
+                OR f.middle_name LIKE '%$searchText%' 
+                OR f.last_name LIKE '%$searchText%' 
+                OR f.email LIKE '%$searchText%')
+            ORDER BY 
+                CASE
+                    WHEN f.first_name LIKE '$searchText%' THEN 1
+                    WHEN f.first_name LIKE '%$searchText' THEN 3
+                    WHEN f.first_name NOT LIKE '%$searchText%' THEN 4
+                    ELSE 2
+                END, f.first_name, f.farmer_id ASC
+            LIMIT 50 OFFSET 1";  // Adjust OFFSET based on pagination
+
+            $result = mysqli_query($con, $sql);
+            if ($result) {
+                while ($row = mysqli_fetch_assoc($result)) {
+                    echo "Farmer ID: " . $row['farmer_id'] . "<br>";
+                    echo "Name: " . $row['first_name'] . " " . $row['middle_name'] . " " . $row['last_name'] . "<br>";
+                    echo "Email: " . $row['email'] . "<br>";
+                    echo "Contact Number: " . $row['contact_number'] . "<br>";
+                    echo "Address: " . $row['address'] . "<br>";
+                    echo "City: " . $row['city'] . "<br>";
+                    echo "State: " . $row['state'] . "<br><br>";
+                }
+            } else {
+                echo "Error while deleting Task!";
+            }
+            break;
         default:
             //code block
             $process;

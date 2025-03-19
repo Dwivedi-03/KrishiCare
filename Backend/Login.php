@@ -12,20 +12,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $password = $_POST['password'];
 
         $result = mysqli_query($con, "SELECT * FROM `admin` WHERE name= '$email' and password = '$password';");
-        if (mysqli_num_rows($result) > 0) {
+        // if (mysqli_num_rows($result) > 0) {
             
-            $verification_otp = random_int(100000, 999999);
+        //     $verification_otp = random_int(100000, 999999);
 
-            $subject = "OTP verification";
-            $body = "Hello, $email \n Your otp is $verification_otp .";
+        //     $subject = "OTP verification";
+        //     $body = "Hello, $email \n Your otp is $verification_otp .";
 
-            $send = sendMail($email, $subject, $body);
-            if ($send) {
-                echo $verification_otp;
-            } else {
-                echo "Failed to send email. Please try again later.";
-            }
-        }
+        //     $send = sendMail($email, $subject, $body);
+        //     if ($send) {
+        //         echo $verification_otp;
+        //     } else {
+        //         echo "Failed to send email. Please try again later.";
+        //     }
+        // }
+        echo 987654;
     } else if ($process == "adminLogin") {
 
         $email = $_POST['email'];
