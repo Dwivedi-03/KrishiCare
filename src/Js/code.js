@@ -1249,25 +1249,22 @@ function deleteTask(taskid, userid) {
   }
 }
 
-function searchUser(id) {
+function searchUser(id, process, table_id, approvedLab) {
   var searchText = getvalue(id);
 
-  console.log(searchText);
   ajaxCall(
     "../Backend/AdminProcess.php",
     "post",
-    "searchText=" + searchText + "&process=userSearch",
-    "status",
-    true
+    "searchText=" +
+      searchText +
+      "&process=" +
+      process +
+      "&searchLabType=" +
+      approvedLab,
+    table_id,
+    false,
+    false
   );
-
-  var status = getvalue("status");
-  if (status == 1) {
-    alert("Registered Successfully!");
-    resetFormdata("farmForm");
-  } else {
-    alert(status);
-  }
   return false;
 }
 

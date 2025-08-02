@@ -13,20 +13,7 @@
     <div class="bg-gray-200 dark:bg-slate-600 w-full h-fit rounded my-8 flex items-center duration-300">
         <div class="w-full p-2 h-full">
             <div class="p-4 bg-gray-100 dark:bg-gray-900 rounded-md overflow-x-scroll">
-                <label for="farmer-table-search" class="sr-only">Search</label>
-                <div class="relative mb-2">
-                    <div class="absolute inset-y-0 rtl:inset-r-0 start-0 flex items-center ps-3 pointer-events-none">
-                        <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true"
-                            xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
-                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
-                        </svg>
-                    </div>
-                    <input type="search" id="farmer-table-search"
-                        class="block pt-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                        placeholder="Search Farmers">
-                </div>
-                <div class="h-fit w-full my-4 flex rounded-md bg-gray-200 dark:bg-slate-600 ">
+                <div class="h-fit w-full mb-4 flex rounded-md bg-gray-200 dark:bg-slate-600 ">
                     <div class="w-full m-2 h-full">
                         <div class="p-4 bg-slate-100 dark:bg-gray-900 rounded-md">
                             <div class=" flex justify-between">
@@ -167,6 +154,20 @@
                         </div>
                     </div>
                 </div>
+                <label for="farmer-table-search" class="sr-only">Search</label>
+                <div class="relative mb-2">
+                    <div class="absolute inset-y-0 rtl:inset-r-0 start-0 flex items-center ps-3 pointer-events-none">
+                        <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true"
+                            xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
+                        </svg>
+                    </div>
+                    <input type="search" id="farmer-table-search"
+                        class="block pt-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                        onkeyup="searchUser('farmer-table-search', 'farmerSearch', 'searchStatus', 'false')"
+                        placeholder="Search Farmers">
+                </div>
                 <!-- Table content -->
                 <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 ">
                     <thead class="text-xs text-gray-700 uppercase bg-gray-200 dark:bg-gray-700 dark:text-gray-300">
@@ -179,33 +180,42 @@
                             <th scope="col" class="px-6 py-3">State</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody id="searchStatus">
                         <?php
                         include "../Backend/config.php";
-                        $query = "select * from farmer_detail";
+                        $query = "SELECT
+                                farmer_id AS id,
+                                CONCAT(first_name, ' ', middle_name, ' ', last_name) AS name,
+                                email,
+                                contact_number AS contact_detail,
+                                address,
+                                city,
+                                state,
+                                farmerprofile AS profile
+                            FROM
+                                farmer_detail";
                         $result = $con->query($query);
                         if (!$result) {
                             die("invalide query");
                         }
                         while ($row = $result->fetch_assoc()) { ?>
-
                             <tr
                                 class='bg-gray-100 dark:text-gray-300 border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600'>
 
                                 <td class='px-6 py-4 flex items-center gap-4'>
                                     <?php
-                                    if (file_exists($row["farmerprofile"]) == true) {
-                                        echo " <img src='../img/" . $row["farmerprofile"] . "' class='h-12 w-12 rounded-full object-cover' alt=''>";
+                                    if (file_exists($row["profile"]) == true) {
+                                        echo " <img src='../img/" . $row["profile"] . "' class='h-12 w-12 rounded-full object-cover' alt=''>";
                                     } else {
                                         echo " <img src='../img/profile.png' class='h-12 w-12 rounded-full' alt=''>";
                                     } ?>
-                                    <?php echo $row['first_name'] . " " . $row['middle_name'] . " " . $row['last_name'] ?>
+                                    <?php echo $row['name'] ?>
                                 </td>
                                 <td class='px-6 py-4'>
                                     <?php echo $row['email'] ?>
                                 </td>
                                 <td class='px-6 py-4'>
-                                    <?php echo $row['contact_number'] ?>
+                                    <?php echo $row['contact_detail'] ?>
                                 </td>
                                 <td class='px-6 py-4'>
                                     <?php echo $row['address'] ?>
@@ -216,7 +226,6 @@
                                 <td class='px-6 py-4'>
                                     <?php echo $row['state'] ?>
                                 </td>
-
                             </tr>
                         <?php }
                         ?>

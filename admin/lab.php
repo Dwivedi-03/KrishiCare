@@ -13,21 +13,8 @@
     <div class="bg-gray-200 dark:bg-slate-600 w-full h-fit rounded my-8 flex items-center duration-300">
         <div class="w-full p-2 h-fit">
             <div class="p-4 bg-gray-100 dark:bg-gray-900 rounded-md overflow-x-scroll">
-                <label for="lab-table-search" class="sr-only">Search</label>
-                <div class="relative mb-2">
-                    <div class="absolute inset-y-0 rtl:inset-r-0 start-0 flex items-center ps-3 pointer-events-none">
-                        <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true"
-                            xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
-                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
-                        </svg>
-                    </div>
-                    <input type="search" id="lab-table-search"
-                        class="block pt-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                        placeholder="Search Laboratory">
-                </div>
-
-                <div class="h-fit w-full my-4 flex rounded-md bg-gray-200 dark:bg-slate-600 ">
+                <label for="approved-lab-table-search" class="sr-only">Search</label>
+                <div class="h-fit w-full mb-4 flex rounded-md bg-gray-200 dark:bg-slate-600 ">
                     <div class="w-full m-2 h-full">
                         <div class="p-4 bg-slate-100 dark:bg-gray-900 rounded-md">
                             <div class=" flex justify-between">
@@ -165,6 +152,19 @@
                         </div>
                     </div>
                 </div>
+                <div class="relative mb-2">
+                    <div class="absolute inset-y-0 rtl:inset-r-0 start-0 flex items-center ps-3 pointer-events-none">
+                        <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true"
+                            xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
+                        </svg>
+                    </div>
+                    <input type="search" id="approved-lab-table-search"
+                        class="block pt-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                        onkeyup="searchUser('approved-lab-table-search', 'labSearch', 'searchApprovedLabStatus', 'true')"
+                        placeholder="Search Laboratory">
+                </div>
                 <!-- Table content -->
                 <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 duration-300">
                     <thead class="text-xs text-gray-700 uppercase bg-gray-200 dark:bg-gray-700 dark:text-gray-300">
@@ -178,36 +178,45 @@
                             <th scope="col" class="px-6 py-3">Ownership</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody id="searchApprovedLabStatus">
                         <?php
-                        include "../Backend/config.php";
-                        $query = "select * from laboratory_detail WHERE status='Approved';";
+                        $query = "SELECT
+                            lab_id AS id,
+                            lab_name AS name,
+                            email,
+                            contact AS contact_detail,
+                            lab_add AS address,
+                            city,
+                            state,
+                            labprofile AS profile,
+                            ownership
+                        FROM
+                            laboratory_detail WHERE status = 'Approved';";
                         $result = $con->query($query);
                         if (!$result) {
-                            die("invalide query");
+                            die("invalid query");
                         }
                         while ($row = $result->fetch_assoc()) {
-                            ?>
+                        ?>
                             <tr
                                 class='bg-gray-100 dark:text-gray-300 border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600'>
-
                                 <td class='px-6 py-4 flex items-center gap-4'>
                                     <?php
-                                    if (file_exists($row["labprofile"]) == true) {
-                                        echo " <img src='../img/" . $row["labprofile"] . "' class='h-12 w-12 rounded-full object-cover' alt=''>";
+                                    if (file_exists($row["profile"]) == true) {
+                                        echo " <img src='../img/" . $row["profile"] . "' class='h-12 w-12 rounded-full object-cover' alt=''>";
                                     } else {
                                         echo " <img src='../img/profile.png' class='h-12 w-12 rounded-full' alt=''>";
                                     } ?>
-                                    <?php echo $row['lab_name']; ?>
+                                    <?php echo $row['name']; ?>
                                 </td>
                                 <td class='px-6 py-4'>
                                     <?php echo $row['email']; ?>
                                 </td>
                                 <td class='px-6 py-4'>
-                                    <?php echo $row['contact']; ?>
+                                    <?php echo $row['contact_detail']; ?>
                                 </td>
                                 <td class='px-6 py-4'>
-                                    <?php echo $row['lab_add']; ?>
+                                    <?php echo $row['address']; ?>
                                 </td>
                                 <td class='px-6 py-4'>
                                     <?php echo $row['city']; ?>
@@ -218,12 +227,10 @@
                                 <td class='px-6 py-4'>
                                     <?php echo $row['ownership']; ?>
                                 </td>
-
                             </tr>
-                            <?php
+                        <?php
                         }
                         ?>
-
                     </tbody>
                 </table>
             </div>
@@ -241,7 +248,7 @@
     <div class="bg-gray-200 dark:bg-slate-600 w-full h-fit rounded my-8 flex items-center duration-300">
         <div class="w-full p-2 h-full">
             <div class="p-4 bg-gray-100 dark:bg-gray-900 rounded-md overflow-x-scroll">
-                <label for="farmer-table-search" class="sr-only">Search</label>
+                <label for="lab-table-search" class="sr-only">Search</label>
                 <div class="relative mb-2">
                     <div class="absolute inset-y-0 rtl:inset-r-0 start-0 flex items-center ps-3 pointer-events-none">
                         <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true"
@@ -250,8 +257,9 @@
                                 d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
                         </svg>
                     </div>
-                    <input type="search" id="farmer-table-search"
+                    <input type="search" id="lab-table-search"
                         class="block pt-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                        onkeyup="searchUser('lab-table-search', 'labSearch', 'searchStatus', 'false')"
                         placeholder="Search Laboratory">
                 </div>
                 <!-- Table content -->
@@ -269,55 +277,62 @@
                             <th scope="col" class="px-6 py-3">Status</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody id="searchStatus">
                         <?php
-                        include "../Backend/config.php";
-                        $query = "select * from laboratory_detail";
+                        $query = "SELECT
+                            lab_id AS id,
+                            lab_name AS name,
+                            email,
+                            contact AS contact_detail,
+                            lab_add AS address,
+                            city,
+                            state,
+                            labprofile AS profile,
+                            ownership,
+                            status
+                        FROM
+                            laboratory_detail;";
                         $result = $con->query($query);
                         if (!$result) {
                             die("invalide query");
                         }
                         while ($row = $result->fetch_assoc()) {
-                            if ($row['status'] != 'Approved') {
-                                ?>
-                                <tr
-                                    class='bg-gray-100 dark:text-gray-300 border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600'>
-                                    <td class='px-6 w-3 py-4 font-medium whitespace-nowrap'>
-                                        <?php // $enqFamerId = md5($row['lab_id']);
-                                                // echo $enqFamerId;
-                                                echo $row['lab_id'] ?>
-                                    </td>
-                                    <td class='px-6 py-4'>
-                                        <?php echo $row['lab_name']; ?>
-                                    </td>
-                                    <td class='px-6 py-4'>
-                                        <?php echo $row['email']; ?>
-                                    </td>
-                                    <td class='px-6 py-4'>
-                                        <?php echo $row['contact']; ?>
-                                    </td>
-                                    <td class='px-6 py-4'>
-                                        <?php echo $row['lab_add']; ?>
-                                    </td>
-                                    <td class='px-6 py-4'>
-                                        <?php echo $row['city']; ?>
-                                    </td>
-                                    <td class='px-6 py-4'>
-                                        <?php echo $row['state']; ?>
-                                    </td>
-                                    <td class='px-6 py-4'>
-                                        <?php echo $row['ownership']; ?>
-                                    </td>
-                                    <td class='px-6 py-2'>
-                                        <button
-                                            onclick="ApproveLab('<?php echo $row['lab_id'] ?>','<?php echo $row['email'] ?>')"
-                                            class='px-6 py-2 rounded-lg bg-green-400 hover:bg-green-500 text-gray-50 dark:text-gray-700'>
-                                            <?php echo (($row['status'] == 'Approved') ? 'Approved' : 'Approve'); ?>
-                                        </button>
-                                    </td>
-                                </tr>
-                                <?php
-                            }
+                        ?>
+                            <tr
+                                class='bg-gray-100 dark:text-gray-300 border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600'>
+                                <td class='px-6 w-3 py-4 font-medium whitespace-nowrap'>
+                                    <?php echo $row['id'] ?>
+                                </td>
+                                <td class='px-6 py-4'>
+                                    <?php echo $row['name']; ?>
+                                </td>
+                                <td class='px-6 py-4'>
+                                    <?php echo $row['email']; ?>
+                                </td>
+                                <td class='px-6 py-4'>
+                                    <?php echo $row['contact_detail']; ?>
+                                </td>
+                                <td class='px-6 py-4'>
+                                    <?php echo $row['address']; ?>
+                                </td>
+                                <td class='px-6 py-4'>
+                                    <?php echo $row['city']; ?>
+                                </td>
+                                <td class='px-6 py-4'>
+                                    <?php echo $row['state']; ?>
+                                </td>
+                                <td class='px-6 py-4'>
+                                    <?php echo $row['ownership']; ?>
+                                </td>
+                                <td class='px-6 py-2'>
+                                    <button
+                                        onclick="ApproveLab('<?php echo $row['id'] ?>','<?php echo $row['email'] ?>')"
+                                        class='px-6 py-2 rounded-lg bg-green-400 hover:bg-green-500 text-gray-50 dark:text-gray-700'>
+                                        <?php echo (($row['status'] == 'Approved') ? 'Approved' : 'Approve'); ?>
+                                    </button>
+                                </td>
+                            </tr>
+                        <?php
                         }
                         ?>
                     </tbody>

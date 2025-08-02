@@ -111,57 +111,279 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             }
             break;
         case "userSearch":
-            //code block
             $searchText = $_POST['searchText'];
 
             $searchText = mysqli_real_escape_string($con, $searchText);
-
             $sql = "
-            SELECT 
-                f.*, 
-                f.first_name AS Text, 
-                f.first_name, 
-                f.middle_name, 
-                f.last_name, 
-                f.email, 
-                f.contact_number, 
-                f.address, 
-                f.city, 
-                f.state,
-                f.password
-            FROM farmer_detail f
-            WHERE 
-                (f.first_name LIKE '%$searchText%' 
-                OR f.middle_name LIKE '%$searchText%' 
-                OR f.last_name LIKE '%$searchText%' 
-                OR f.email LIKE '%$searchText%')
-            ORDER BY 
-                CASE
-                    WHEN f.first_name LIKE '$searchText%' THEN 1
-                    WHEN f.first_name LIKE '%$searchText' THEN 3
-                    WHEN f.first_name NOT LIKE '%$searchText%' THEN 4
-                    ELSE 2
-                END, f.first_name, f.farmer_id ASC
-            LIMIT 50 OFFSET 1";  // Adjust OFFSET based on pagination
+            (
+                SELECT
+                    farmer_id AS id,
+                    CONCAT(
+                        first_name,
+                        ' ',
+                        middle_name,
+                        ' ',
+                        last_name
+                    ) AS name,
+                    email,
+                    contact_number AS contact_detail,
+                    address,
+                    city,
+                    state,
+                    farmerprofile AS profile,
+                    'Farmer' AS flag
+                FROM
+                    farmer_detail
+                WHERE
+                    (
+                        first_name LIKE '%$searchText%' OR middle_name LIKE '%$searchText%' OR last_name LIKE '%$searchText%' OR email LIKE '%$searchText%'
+                    )
+                ORDER BY CASE WHEN
+                    middle_name LIKE '$searchText%' THEN 1 WHEN middle_name LIKE '%$searchText' THEN 3 WHEN middle_name NOT LIKE '%$searchText%' THEN 4 ELSE 2
+                END,
+                middle_name,
+                farmer_id ASC
+                LIMIT 50 OFFSET 0
+                )
+                UNION ALL
+                (
+                    SELECT
+                        lab_id AS id,
+                        lab_name AS name,
+                        email,
+                        contact AS contact_detail,
+                        lab_add AS address,
+                        city,
+                        state,
+                        labprofile AS profile,
+                        'Laboratory' AS flag
+                    FROM
+                        laboratory_detail
+                    WHERE
+                STATUS
+                    = 'Approved' AND(
+                        lab_name LIKE '%$searchText%' OR email LIKE '%$searchText%'
+                    )
+                ORDER BY CASE WHEN
+                    lab_name LIKE '$searchText%' THEN 1 WHEN email NOT LIKE '%$searchText%' THEN 3 ELSE 2
+                END,
+                lab_name,
+                lab_id ASC
+                LIMIT 50 OFFSET 0
+            )";
 
             $result = mysqli_query($con, $sql);
             if ($result) {
+                $searchResult = [];
                 while ($row = mysqli_fetch_assoc($result)) {
-                    echo "Farmer ID: " . $row['farmer_id'] . "<br>";
-                    echo "Name: " . $row['first_name'] . " " . $row['middle_name'] . " " . $row['last_name'] . "<br>";
-                    echo "Email: " . $row['email'] . "<br>";
-                    echo "Contact Number: " . $row['contact_number'] . "<br>";
-                    echo "Address: " . $row['address'] . "<br>";
-                    echo "City: " . $row['city'] . "<br>";
-                    echo "State: " . $row['state'] . "<br><br>";
+                ?>
+                    <tr
+                        class='bg-gray-100 dark:text-gray-300 border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600'>
+                        <td class='px-6 py-4'>
+                            <?php
+                            if (file_exists($row["profile"]) == true) {
+                                echo " <img src='../img/" . $row["profile"] . "' class='h-12 w-12 rounded-full object-cover' alt=''>";
+                            } else {
+                                echo " <img src='../img/profile.png' class='h-12 w-12 rounded-full' alt=''>";
+                            } ?>
+                        </td>
+                        <td class='px-6 py-4'>
+                            <?php echo $row['name'] ?>
+                        </td>
+                        <td class='px-6 py-4'>
+                            <?php echo $row['email'] ?>
+                        </td>
+                        <td class='px-6 py-4'>
+                            <?php echo $row['contact_detail'] ?>
+                        </td>
+                        <td class='px-6 py-4'>
+                            <?php echo $row['address'] ?>
+                        </td>
+                        <td class='px-6 py-4'>
+                            <?php echo $row['city'] ?>
+                        </td>
+                        <td class='px-6 py-4'>
+                            <?php echo $row['state'] ?>
+                        </td>
+                        <td class='px-6 py-4'>
+                            <?php echo $row['flag'] ?>
+                        </td>
+                    </tr>
+                <?php
                 }
+                mysqli_free_result($result);
             } else {
-                echo "Error while deleting Task!";
+                echo "No details found!";
+            }
+            break;
+        case "farmerSearch":
+            $searchText = $_POST['searchText'];
+            $searchText = mysqli_real_escape_string($con, $searchText);
+            $sql = "SELECT
+                    farmer_id AS id,
+                    CONCAT(
+                        first_name,
+                        ' ',
+                        middle_name,
+                        ' ',
+                        last_name
+                    ) AS name,
+                    email,
+                    contact_number AS contact_detail,
+                    address,
+                    city,
+                    state,
+                    farmerprofile AS profile,
+                    'Farmer' AS flag
+                FROM
+                    farmer_detail
+                WHERE
+                    (
+                        first_name LIKE '%$searchText%' OR middle_name LIKE '%$searchText%' OR last_name LIKE '%$searchText%' OR email LIKE '%$searchText%'
+                    )
+                ORDER BY CASE WHEN
+                    middle_name LIKE '$searchText%' THEN 1 WHEN middle_name LIKE '%$searchText' THEN 3 WHEN middle_name NOT LIKE '%$searchText%' THEN 4 ELSE 2
+                END,
+                middle_name,
+                farmer_id ASC
+                LIMIT 50 OFFSET 0";
+
+            $result = mysqli_query($con, $sql);
+            if ($result) {
+                $searchResult = [];
+                while ($row = mysqli_fetch_assoc($result)) {
+                ?>
+                    <tr
+                        class='bg-gray-100 dark:text-gray-300 border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600'>
+
+                        <td class='px-6 py-4 flex items-center gap-4'>
+                            <?php
+                            if (file_exists($row["profile"]) == true) {
+                                echo " <img src='../img/" . $row["profile"] . "' class='h-12 w-12 rounded-full object-cover' alt=''>";
+                            } else {
+                                echo " <img src='../img/profile.png' class='h-12 w-12 rounded-full' alt=''>";
+                            } ?>
+                            <?php echo $row['name'] ?>
+                        </td>
+                        <td class='px-6 py-4'>
+                            <?php echo $row['email'] ?>
+                        </td>
+                        <td class='px-6 py-4'>
+                            <?php echo $row['contact_detail'] ?>
+                        </td>
+                        <td class='px-6 py-4'>
+                            <?php echo $row['address'] ?>
+                        </td>
+                        <td class='px-6 py-4'>
+                            <?php echo $row['city'] ?>
+                        </td>
+                        <td class='px-6 py-4'>
+                            <?php echo $row['state'] ?>
+                        </td>
+                    </tr>
+                <?php
+                }
+                mysqli_free_result($result);
+            } else {
+                echo "No details found!";
+            }
+            break;
+        case "labSearch":
+            $isApprovedLab = $_POST['searchLabType'];
+            $searchText = $_POST['searchText'];
+            $searchText = mysqli_real_escape_string($con, $searchText);
+
+            $approvedLabCondition = ($isApprovedLab == 'true' ? " status = 'Approved' AND " : '');
+
+            $sql = "SELECT
+                        lab_id AS id,
+                        lab_name AS name,
+                        email,
+                        contact AS contact_detail,
+                        lab_add AS address,
+                        city,
+                        state,
+                        labprofile AS profile,
+                        ownership,
+                        status
+                    FROM
+                        laboratory_detail
+                    WHERE $approvedLabCondition (
+                        lab_name LIKE '%$searchText%' OR email LIKE '%$searchText%'
+                    )
+                    ORDER BY CASE WHEN
+                        lab_name LIKE '$searchText%' THEN 1 WHEN email NOT LIKE '%$searchText%' THEN 3 ELSE 2
+                    END,
+                    lab_name,
+                    lab_id ASC
+                LIMIT 50 OFFSET 0";
+            $result = mysqli_query($con, $sql);
+            if ($result) {
+                $searchResult = [];
+                while ($row = mysqli_fetch_assoc($result)) {
+                ?>
+                    <tr
+                        class='bg-gray-100 dark:text-gray-300 border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600'>
+                        <td class='px-6 w-3 py-4 font-medium whitespace-nowrap'>
+                            <?php
+                            if ($isApprovedLab == 'true') {
+                                echo $row['name'];
+                            } else {
+                                echo $row['id'];
+                            }
+                            ?>
+                        </td>
+                        <?php
+                        if ($isApprovedLab != 'true') {
+                        ?>
+                            <td class='px-6 py-4'>
+                                <?php echo $row['name']; ?>
+                            </td>
+                        <?php
+                        }
+                        ?>
+                        <td class='px-6 py-4'>
+                            <?php echo $row['email']; ?>
+                        </td>
+                        <td class='px-6 py-4'>
+                            <?php echo $row['contact_detail']; ?>
+                        </td>
+                        <td class='px-6 py-4'>
+                            <?php echo $row['address']; ?>
+                        </td>
+                        <td class='px-6 py-4'>
+                            <?php echo $row['city']; ?>
+                        </td>
+                        <td class='px-6 py-4'>
+                            <?php echo $row['state']; ?>
+                        </td>
+                        <td class='px-6 py-4'>
+                            <?php echo $row['ownership']; ?>
+                        </td>
+                        <?php
+                        if ($isApprovedLab != 'true') {
+                        ?>
+                            <td class='px-6 py-2'>
+                                <button
+                                    onclick="ApproveLab('<?php echo $row['id'] ?>','<?php echo $row['email'] ?>')"
+                                    class='px-6 py-2 rounded-lg bg-green-400 hover:bg-green-500 text-gray-50 dark:text-gray-700'>
+                                    <?php echo (($row['status'] == 'Approved') ? 'Approved' : 'Approve'); ?>
+                                </button>
+                            </td>
+                        <?php
+                        }
+                        ?>
+                    </tr>
+                <?php
+                }
+                mysqli_free_result($result);
+            } else {
+                echo "No details found!";
             }
             break;
         default:
             //code block
-            $process;
+            echo $process . "\n";
             echo "Invalid Request";
             break;
     }

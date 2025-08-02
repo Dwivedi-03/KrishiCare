@@ -135,9 +135,9 @@ if ($reportresult) { // Check if the query was successful
                 </svg>
             </div>
             <input type="search" id="user-table-search"
-                class="block pt-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" onkeyup="searchUser('user-table-search')"
+                class="block pt-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                onkeyup="searchUser('user-table-search', 'userSearch', 'searchStatus', 'false')"
                 placeholder="Search Users">
-            <div id="status"></div>
         </div>
         <thead class="text-xs text-gray-700 uppercase bg-gray-200 dark:bg-gray-700 dark:text-gray-300">
             <tr>
@@ -151,34 +151,62 @@ if ($reportresult) { // Check if the query was successful
                 <th scope="col" class="px-6 py-3">Ownership</th>
             </tr>
         </thead>
-        <tbody>
+        <tbody id="searchStatus">
             <?php
-            include "../Backend/config.php";
-            $query = "select * from farmer_detail";
+            $query = "(
+                SELECT
+                    farmer_id AS id,
+                    CONCAT(first_name, ' ', middle_name, ' ', last_name) AS name,
+                    email,
+                    contact_number AS contact_detail,
+                    address,
+                    city,
+                    state,
+                    farmerprofile AS profile,
+                    'Farmer' AS flag
+                FROM
+                    farmer_detail 
+                )
+                UNION ALL
+                    (
+                    SELECT
+                        lab_id AS id,
+                        lab_name AS name,
+                        email,
+                        contact AS contact_detail,
+                        lab_add AS address,
+                        city,
+                        state,
+                        labprofile AS profile,
+                        'Laboratory' AS flag
+                    FROM
+                        laboratory_detail WHERE status = 'Approved'
+            )";
+
             $result = $con->query($query);
             if (!$result) {
-                die("invalide query");
+                die("invalid query");
             }
-            while ($row = $result->fetch_assoc()) { ?>
-
+            while ($row = $result->fetch_assoc()) {
+            ?>
                 <tr
                     class='bg-gray-100 dark:text-gray-300 border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600'>
                     <td class='px-6 py-4'>
                         <?php
-                        if (file_exists($row["farmerprofile"]) == true) {
-                            echo " <img src='../img/" . $row["farmerprofile"] . "' class='h-12 w-12 rounded-full object-cover' alt=''>";
+                        if (file_exists($row["profile"]) == true) {
+                            echo " <img src='../img/" . $row["profile"] . "' class='h-12 w-12 rounded-full object-cover' alt=''>";
                         } else {
                             echo " <img src='../img/profile.png' class='h-12 w-12 rounded-full' alt=''>";
                         } ?>
                     </td>
                     <td class='px-6 py-4'>
-                        <?php echo $row['first_name'] . " " . $row['middle_name'] . " " . $row['last_name'] ?>
+                        <?php echo $row['name'] ?>
                     </td>
                     <td class='px-6 py-4'>
                         <?php echo $row['email'] ?>
                     </td>
                     <td class='px-6 py-4'>
-                        <?php echo $row['contact_number'] ?>
+                        <?php echo $row['contact_detail'] ?>
                     </td>
                     <td class='px-6 py-4'>
                         <?php echo $row['address'] ?>
@@ -190,59 +218,12 @@ if ($reportresult) { // Check if the query was successful
                         <?php echo $row['state'] ?>
                     </td>
                     <td class='px-6 py-4'>
-                        <?php echo "Farmer" ?>
+                        <?php echo $row['flag'] ?>
                     </td>
-
-                </tr>
-            <?php }
-            ?>
-
-            <?php
-            include "../Backend/config.php";
-            $query = "select * from laboratory_detail WHERE status='Approved';";
-            $result = $con->query($query);
-            if (!$result) {
-                die("invalide query");
-            }
-            while ($row = $result->fetch_assoc()) {
-            ?>
-                <tr
-                    class='bg-gray-100 dark:text-gray-300 border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600'>
-                    <td class='px-6 py-4'>
-                        <?php
-                        if (file_exists($row["labprofile"]) == true) {
-                            echo " <img src='../img/" . $row["labprofile"] . "' class='h-12 w-12 rounded-full object-cover' alt=''>";
-                        } else {
-                            echo " <img src='../img/profile.png' class='h-12 w-12 rounded-full' alt=''>";
-                        } ?>
-                    </td>
-                    <td class='px-6 py-4'>
-                        <?php echo $row['lab_name']; ?>
-                    </td>
-                    <td class='px-6 py-4'>
-                        <?php echo $row['email']; ?>
-                    </td>
-                    <td class='px-6 py-4'>
-                        <?php echo $row['contact']; ?>
-                    </td>
-                    <td class='px-6 py-4'>
-                        <?php echo $row['lab_add']; ?>
-                    </td>
-                    <td class='px-6 py-4'>
-                        <?php echo $row['city']; ?>
-                    </td>
-                    <td class='px-6 py-4'>
-                        <?php echo $row['state']; ?>
-                    </td>
-                    <td class='px-6 py-4'>
-                        <?php echo $row['ownership']; ?>
-                    </td>
-
                 </tr>
             <?php
             }
             ?>
-
         </tbody>
     </table>
     </div>
